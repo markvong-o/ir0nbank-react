@@ -13,8 +13,8 @@ export function getConfig() {
       : null;
 
   return {
-    domain: configJson.domain,
-    clientId: configJson.clientId,
+    domain: configJson.domain ? configJson.domain : process.env.DOMAIN,
+    clientId: configJson.clientId ? configJson.clientId : process.env.CLIENT_ID,
     ...(audience ? { audience } : null),
   };
 }
