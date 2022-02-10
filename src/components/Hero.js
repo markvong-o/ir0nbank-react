@@ -1,17 +1,19 @@
-import React from "react";
+import React from 'react';
 
-import logo from "../assets/logo.svg";
+import { useAuth0 } from '@auth0/auth0-react';
 
-const Hero = () => (
-  <div className="text-center hero my-5">
-    <img className="mb-3 app-logo" src={logo} alt="React logo" width="120" />
-    <h1 className="mb-4">React.js Sample Project</h1>
-
-    <p className="lead">
-      This is a sample application that demonstrates an authentication flow for
-      an SPA, using <a href="https://reactjs.org">React.js</a>
-    </p>
-  </div>
-);
+const Hero = () => {
+  const { user } = useAuth0();
+  return (
+    <div className="text-center hero my-5">
+      <h1 className="mb-4">{`Welcome ${user.name}`}</h1>
+      <p className="lead">
+        We are the <span style={{ fontWeight: 'bold' }}>Ir0n Bank</span>,
+        central to all of Wester0s. Thank you for choosing us for all of your
+        banking needs.
+      </p>
+    </div>
+  );
+};
 
 export default Hero;

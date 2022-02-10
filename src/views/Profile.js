@@ -4,23 +4,27 @@ import { Container, Row, Col } from "reactstrap";
 import Highlight from "../components/Highlight";
 import Loading from "../components/Loading";
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
+import jwt_decode from "jwt-decode";
 
 export const ProfileComponent = () => {
-  const { user, getAccessTokenSilently, getAccessTokenWithPopup } = useAuth0();
-  const {accessToken, setAccessToken} = useState(null);
+  const { user, getAccessTokenSilently, getAccessTokenWithPopup, getIdTokenClaims } = useAuth0();
+  const [accessToken, setAccessToken] = useState(null);
+  const [idToken, setIdToken] = useState(null);
+
   useEffect(() => {
     (async () => {
       try {
         const token = await getAccessTokenWithPopup({
-          audience: "api://ir0n-bank-transactions",
-          scope: 'read:balance'
+          audience: "api://ir0n-bank-transactions"
         })
-        console.log(token);
+        setAccessToken(jwt_decode(token));
+        const iToken = await getIdTokenClaims();
+        setIdToken(iToken);
       } catch(err) {
         console.warn(err);
       }
     })();
-  }, [getAccessTokenSilently, getAccessTokenWithPopup]);
+  }, [getAccessTokenSilently, getAccessTokenWithPopup, getIdTokenClaims]);
 
   return (
     <Container className="mb-5">
@@ -38,9 +42,16 @@ export const ProfileComponent = () => {
         </Col>
       </Row>
       <Row>
+        <h1>User</h1>
         <Highlight>{JSON.stringify(user, null, 2)}</Highlight>
       </Row>
       <Row>
+        <h1>ID Token</h1>
+        {idToken && <Highlight>{JSON.stringify(idToken, null, 2)}</Highlight>}
+      </Row>
+      <Row>
+        <h1>Access Token</h1>
+        {accessToken && <Highlight>{JSON.stringify(accessToken, null, 2)}</Highlight>}
       </Row>
     </Container>
   );
