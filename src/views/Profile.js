@@ -12,8 +12,8 @@ export const ProfileComponent = () => {
     (async () => {
       try {
         const token = await getAccessTokenWithPopup({
-          audience: "https://ir0nbank.game-of-thrones.us",
-          scope: 'read:account'
+          audience: "api://ir0n-bank-transactions",
+          scope: 'read:balance'
         })
         console.log(token);
       } catch(err) {
