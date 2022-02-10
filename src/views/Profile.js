@@ -12,12 +12,10 @@ export const ProfileComponent = () => {
     (async () => {
       try {
         const token = await getAccessTokenWithPopup({
-          audience: "api://ir0n-bank-transactions",
-          scope: 'read:balance update:balance'
+          audience: "https://ir0nbank.game-of-thrones.us",
+          scope: 'read:account'
         })
         console.log(token);
-        // setAccessToken(token);
-        // console.log(accessToken);
       } catch(err) {
         console.warn(err);
       }
