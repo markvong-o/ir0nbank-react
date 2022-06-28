@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink as RouterNavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -19,26 +19,62 @@ import {
 } from 'reactstrap';
 
 import { useAuth0 } from '@auth0/auth0-react';
+import auth0 from 'auth0-js';
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { user, isAuthenticated, loginWithRedirect, logout, getAccessTokenWithPopup } = useAuth0();
   const toggle = () => setIsOpen(!isOpen);
 
+  useEffect(()=> {
+    
+  }, [])
+
+  // Check for a session
+  const a0 = new auth0.WebAuth({
+    domain: "wester0s.us.auth0.com",
+    clientID: "IOXmpWdMs7TNcBJGlSOB6G7P7abBhJwB"
+  });
+
+  a0.checkSession({
+    scope: 'openid profile email',
+    responseType: 'token id_token',
+    redirectUri: 'http://localhost:3000'
+  }, async (err, authResult) => {
+      if(err) {
+        console.log(err);
+      }
+
+      if(authResult && !isAuthenticated) {
+        loginWithRedirect();
+        console.log(authResult);
+      }
+    
+  })
+  
   const logoutWithRedirect = () =>
     logout({
       returnTo: window.location.origin,
     });
+
+  const getBalance = async () => {
+    let token;
+    try {
+      token = await getAccessTokenWithPopup({
+        audience: "api://ir0n-bank-transactions",
+        scope: "read:balance"
+      });
+    } catch(err) {
+      console.warn("Error retrieving access to balances.")
+    }
+    console.log(token);
+  }
 
   return (
     <div className="nav-container">
       <Navbar color="light" light expand="md">
         <Container>
           <NavbarBrand href="/">
-            {/* <img
-              style={{ width: '55px' }}
-              src="https://i.pinimg.com/originals/13/b3/0c/13b30cbe9f6de3e1ccafb37bc1ccf866.jpg"
-            /> */}
             <FontAwesomeIcon icon="piggy-bank" size="3x" color="Dodgerblue" />
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
@@ -66,6 +102,18 @@ const NavBar = () => {
                   </NavLink>
                 </NavItem>
               )}
+              {isAuthenticated && (
+                <NavItem>
+                  <NavLink
+                    tag={RouterNavLink}
+                    exact
+                    to="/"
+                    onClick={() => getBalance({})}
+                  >
+                    Check Balance
+                  </NavLink>
+                </NavItem>
+            )}
             </Nav>
             <Nav className="d-none d-md-block" navbar>
               {!isAuthenticated && (
@@ -111,6 +159,7 @@ const NavBar = () => {
                 </UncontrolledDropdown>
               )}
             </Nav>
+            
             {!isAuthenticated && (
               <Nav className="d-md-none" navbar>
                 <NavItem>
