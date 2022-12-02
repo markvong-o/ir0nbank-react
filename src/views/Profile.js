@@ -14,7 +14,7 @@ export const ProfileComponent = () => {
   useEffect(() => {
     (async () => {
       try {
-        const token = await getAccessTokenWithPopup({
+        const token = await getAccessTokenSilently({
           audience: "api://ir0n-bank-transactions"
         })
         setAccessToken(jwt_decode(token));
